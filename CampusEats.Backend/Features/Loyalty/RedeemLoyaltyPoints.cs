@@ -27,7 +27,7 @@ public static class RedeemLoyaltyPoints
     {
         private readonly AppDbContext _context;
         private const decimal PointsToMoneyRatio = 0.1m;
-        private const int MinimumPointsToRedeem = 50;
+        private const int MinimumPointsToRedeem = 50; 
 
         public Handler(AppDbContext context)
         {
@@ -41,6 +41,9 @@ public static class RedeemLoyaltyPoints
 
             if (user == null)
                 return Result<RedeemPointsResultDto>.Failure("User not found");
+
+            if (user.LoyaltyPoints < MinimumPointsToRedeem)
+                return Result<RedeemPointsResultDto>.Failure($"Minimum {MinimumPointsToRedeem} points required to redeem");
 
             if (request.PointsToRedeem < MinimumPointsToRedeem)
                 return Result<RedeemPointsResultDto>.Failure($"Minimum {MinimumPointsToRedeem} points required to redeem");
@@ -74,7 +77,7 @@ public static class RedeemLoyaltyPoints
                 PointsRedeemed = request.PointsToRedeem,
                 DiscountAmount = discountAmount,
                 RemainingPoints = user.LoyaltyPoints,
-                Message = $"Successfully redeemed {request.PointsToRedeem} points for {discountAmount:C} discount!"
+                Message = $"Successfully redeemed {request.PointsToRedeem} points for {discountAmount:F2} RON discount!"
             };
 
             return Result<RedeemPointsResultDto>.Success(result);
